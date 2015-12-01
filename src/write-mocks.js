@@ -44,12 +44,12 @@ function getRoutes (transactions) {
 
     const key = `${hostname}${pathname} ${method}`;
     if (!(key in routes)) {
+      const contentType = responseHeaders["content-type"] || responseHeaders["Content-Type"] || "";
       routes[key] = {
         method,
         hostname,
         pathname,
-        isJson: responseHeaders["content-type"] && 
-          (responseHeaders["content-type"].indexOf("application/json") > -1),
+        isJson: contentType.indexOf("application/json") > -1,
         responses: []
       };
     }
@@ -115,7 +115,9 @@ export default function writeMocks (ip, port, destination, transactions) {
       path: route.pathname,
       hostname: route.hostname,
       handlers: handlersNode,
-      contentType: route.responses[0].responseHeaders["content-type"] || "text/text"
+      contentType: route.responses[0].responseHeaders["content-type"] || 
+       route.responses[0].responseHeaders["Content-Type"] ||
+       "text/text"
     });
   })
 
