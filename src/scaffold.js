@@ -26,19 +26,37 @@ function trapFirstCtrlC () {
 }
 
 function main (options) {
+  const {
+    ip = "0.0.0.0",
+    port = 1337,
+    destination = process.cwd()
+  } = options;
+
+  let getTransactions;
   if (options._.length && options._[0] === "import") {
     const filepath = path.resolve(process.cwd(), options._[1]);
-    doImport(filepath, options);
+    getTransactions = doImport(filepath);
   } else {
-    runProxy(options);
+    getTransactions = runProxy(options);
   }
+
+  getTransactions
+    .then(transactions => {
+      console.log("writing mocks to disk...")
+      return writeMocks(ip, port, destination, transactions);
+    })
+    .then(() => {
+      console.log("finished!");
+      console.log("");
+      console.log("If you haven't done so, you'll want to install a couple of node modules:");
+      console.log("  npm install --save yargs lodash");
+    });
 }
 
 function runProxy (options) {
   const {
     ip = "0.0.0.0",
-    port = 1337,
-    destination = process.cwd()
+    port = 1337
   } = options;
 
   const transactions = [];
@@ -63,9 +81,9 @@ function runProxy (options) {
     transactions[transactionNo] = null;
   }
 
-  const [ start, stop ] = setupServer({ ip, port}, onRequest, onResponse, onError);
+  const [ start, stop ] = setupServer({ ip, port }, onRequest, onResponse, onError);
 
-  Promise.resolve()
+  return Promise.resolve()
     .then(() => {
       console.log(
         "\nWhen started, the proxy server will forward any HTTP(S) requests along to\n" +
@@ -84,39 +102,14 @@ function runProxy (options) {
     })
     .then(() => console.log("server stopped, press CTRL-C immediately to avoid writing to disk..."))
     .delay(3000)
-    .then(() => {
-      console.log("writing mocks to disk...")
-      return writeMocks(ip, port, destination, transactions);
-    })
-    .then(() => {
-      console.log("finished!");
-      console.log("");
-      console.log("If you haven't done so, you'll want to install a couple of node modules:");
-      console.log("  npm install --save yargs lodash");
-    });
+    .then(() => transactions);
 }
 
-function doImport(filepath, options) {
-  const {
-    ip = "0.0.0.0",
-    port = 1337,
-    destination = process.cwd()
-  } = options;
-
-  Promise.resolve()
+function doImport(filepath) {
+  return Promise.resolve()
     .then(() => {
       console.log("importing HAR file...");
       return importHar(filepath);
-    })
-    .then(transactions => {
-      console.log("writing mocks to disk...")
-      return writeMocks(ip, port, destination, transactions);
-    })
-    .then(() => {
-      console.log("finished!");
-      console.log("");
-      console.log("If you haven't done so, you'll want to install a couple of node modules:");
-      console.log("  npm install --save yargs lodash");
     });
 }
 
