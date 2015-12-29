@@ -48,29 +48,27 @@ export default function setupServer ({ ip, port }, onRequest, onResponse, onErro
         body: payload,
         encoding: null
       })
-        .then(([response, body]) => {
-          const { type: responseType, statusCode, headers: responseHeaders } = response;
-
+        .then(({ statusCode, body, headers: responseHeaders }) => {
           let r = reply(body)
             .code(statusCode);
-          Object.keys(response.headers).forEach(header => {
-            r = r.header(header, response.headers[header]);
+          Object.keys(responseHeaders).forEach(header => {
+            r = r.header(header, responseHeaders[header]);
           });
 
-          return decompress(body, headers).then(decompressedBody => {
+          return decompress(body, responseHeaders).then(decompressedBody => {
             return onResponse({
               statusCode,
               method,
               href,
               transactionNo,
               body: decompressedBody,
-              headers: response.headers
+              headers: responseHeaders
             });
           });
         })
         .catch(err => {
           onError(transactionNo);
-          printRow(transactionNo, text("ERROR").cyan(), err);
+          printRow(transactionNo, text("ERROR").cyan(), err.stack);
           reply("").code(500);
           return;
         });
