@@ -61,7 +61,7 @@ function getRoutes (transactions) {
       responseHeaders,
       // This unique name will be used to generate fixture files.  Because of filename length
       // limits, this value should not exceed 255 characters in length.
-      name: `${preexistingResponses}-${key}`.substr(0, 254 - preexistingResponses.toString().length)
+      name: `${preexistingResponses}-${key}`.substr(0, 240 - preexistingResponses.toString().length)
     });
   }
 
