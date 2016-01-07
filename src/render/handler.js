@@ -17,7 +17,7 @@ const successTmpl = template(`({
 const errorTmpl = template(`({
   description: NAME,
   handler: function (request) {
-    throw new HttpErr({
+    throw new Drydock.Errors.HttpError({
       payload: FIXTURE_EXPRESSION,
       type: RESPONSE_TYPE,
       code: STATUS_CODE
