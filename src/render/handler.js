@@ -25,15 +25,16 @@ const errorTmpl = template(`({
   }
 })`);
 
-export default function renderHandler (pathToFixture, isJson, statusCode) {
+export default function renderHandler (name, pathToFixture, isJson, statusCode) {
   const PATH_TO_FILE = t.stringLiteral(pathToFixture);
   const FIXTURE_EXPRESSION = isJson ?
-    requireJsonTmpl({ PATH_TO_FILE }) :
-    requireHtmlTmpl({ PATH_TO_FILE });
+    requireJsonTmpl({ NAME: name, PATH_TO_FILE }) :
+    requireHtmlTmpl({ NAME: name, PATH_TO_FILE });
 
   return (statusCode === 200 ?
     successTmpl({ FIXTURE_EXPRESSION }) :
     errorTmpl({
+      NAME: name,
       FIXTURE_EXPRESSION,
       RESPONSE_TYPE: t.stringLiteral(isJson ? "application/json" : "text/html"),
       STATUS_CODE: t.numericLiteral(statusCode)

@@ -106,7 +106,7 @@ export default function writeMocks (ip, port, destination, transactions) {
       const pathToFixture = writeFixture(route, response, destination);
       const name = response.name;
       return {
-        ast: renderHandler(pathToFixture, route.isJson, response.statusCode),
+        ast: renderHandler(name, pathToFixture, route.isJson, response.statusCode),
         name
       };
     }));
