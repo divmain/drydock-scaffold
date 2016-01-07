@@ -49,7 +49,7 @@ function main (options) {
       console.log("finished!");
       console.log("");
       console.log("If you haven't done so, you'll want to install a couple of node modules:");
-      console.log("  npm install --save yargs lodash");
+      console.log("  npm install --save drydock yargs lodash");
     });
 }
 
