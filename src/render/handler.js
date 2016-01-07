@@ -34,7 +34,7 @@ export default function renderHandler (name, pathToFixture, isJson, statusCode) 
   return (statusCode === 200 ?
     successTmpl({ FIXTURE_EXPRESSION }) :
     errorTmpl({
-      NAME: name,
+      NAME: t.stringLiteral(name),
       FIXTURE_EXPRESSION,
       RESPONSE_TYPE: t.stringLiteral(isJson ? "application/json" : "text/html"),
       STATUS_CODE: t.numericLiteral(statusCode)
