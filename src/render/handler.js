@@ -32,7 +32,7 @@ export default function renderHandler (name, pathToFixture, isJson, statusCode) 
     requireHtmlTmpl({ PATH_TO_FILE });
 
   return (statusCode === 200 ?
-    successTmpl({ NAME: name, FIXTURE_EXPRESSION }) :
+    successTmpl({ NAME: t.stringLiteral(name), FIXTURE_EXPRESSION }) :
     errorTmpl({
       NAME: t.stringLiteral(name),
       FIXTURE_EXPRESSION,
