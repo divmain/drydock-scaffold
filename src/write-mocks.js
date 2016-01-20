@@ -44,7 +44,7 @@ function getRoutes (transactions) {
 
     const key = `${method}-${hostname}${pathname}`;
     if (!(key in routes)) {
-      const contentType = responseHeaders["content-type"] || responseHeaders["Content-Type"] || "";
+      const contentType = responseHeaders && (responseHeaders["content-type"] || responseHeaders["Content-Type"]) || "";
       routes[key] = {
         method,
         hostname,
