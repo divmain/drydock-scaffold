@@ -42,7 +42,7 @@ function getRoutes (transactions) {
       hadError
     } = transaction;
 
-    const key = `${hostname}${pathname} ${method}`;
+    const key = `${method}-${hostname}${pathname}`;
     if (!(key in routes)) {
       const contentType = responseHeaders["content-type"] || responseHeaders["Content-Type"] || "";
       routes[key] = {
@@ -59,9 +59,7 @@ function getRoutes (transactions) {
       statusCode,
       responseBody,
       responseHeaders,
-      // This unique name will be used to generate fixture files.  Because of filename length
-      // limits, this value should not exceed 255 characters in length.
-      name: `${preexistingResponses}-${key}`.substr(0, 240 - preexistingResponses.toString().length)
+      uniqueName: `${preexistingResponses}-${key}`
     });
   }
 
@@ -83,7 +81,12 @@ function writeFixture (route, response, destination) {
   const extension = route.isJson ?
     ".json" :
     ".html";
-  const escapedName = encodeURIComponent(response.name);
+
+  let escapedName = encodeURIComponent(response.uniqueName);
+  // This unique name will be used to generate fixture files.  Because of filename length
+  // limits, this value should not exceed 255 characters in length.
+  escapedName = escapedName.substr(0, 240);
+
   const pathToFixture = `./fixtures/${escapedName}${extension}`;
 
   const body = route.isJson ?
@@ -104,10 +107,9 @@ export default function writeMocks (ip, port, destination, transactions) {
 
     const handlersNode = renderHandlers(route.responses.map(response => {
       const pathToFixture = writeFixture(route, response, destination);
-      const name = response.name;
       return {
-        ast: renderHandler(name, pathToFixture, route.isJson, response.statusCode),
-        name
+        ast: renderHandler(response.uniqueName, pathToFixture, route.isJson, response.statusCode),
+        name: response.uniqueName
       };
     }));
 
